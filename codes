@@ -1,0 +1,1 @@
+mask_contour = np.repeat(mask_contour[:, :, np.newaxis], 3, axis=2)  # tourline = 1  从一维扩展到三维
