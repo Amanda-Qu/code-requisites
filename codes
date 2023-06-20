@@ -2,3 +2,69 @@ mask_contour = np.repeat(mask_contour[:, :, np.newaxis], 3, axis=2)  # tourline 
 
 
 #读取excel中的数据，修改，写入
+import pandas as pd
+import time
+import random
+
+def difference(A,B):
+    return list(set(A).difference(set(B)))
+    
+    
+def intersection(A,B):
+    return list(set(A).intersection(set(B)))
+
+def writeExcel(A,des):
+    A= A + [''] * (304- len(A))
+    df.insert(loc=len(df.columns), column=des, value=A)
+    
+    
+col = {}
+
+#不指定sheet参数，默认读取第一个sheet，
+df=pd.read_excel('E:/DataSets/重要表格/'+"原始数据简要信息20230606.xlsx")
+print(df.columns)
+
+
+A = df["序列号"].tolist()
+# B = df["旧序列号"].tolist()
+C = df["AI训练的256例"].tolist()  # C和D 有映射关系， 根据CD的关系把B填上
+D = df["现替换序列号"].tolist()
+import os
+E = os.listdir('E:\DataSets\\DS52-133\\all')
+
+
+# 去除nan空的值，长度到真实的长度
+A = [x for x in A if type(x)==str]
+D = [x for x in D if type(x)==str]
+C = [x for x in C if type(x)==str]
+# B = [x for x in B if type(x)==str]
+B=[]
+
+for ele in A[0:133]:
+    index = D.index(ele)
+    oldNo = C[index]
+    B.append(oldNo)
+    
+for ele in A[133:323]:
+    B.append(ele)
+
+# # 校验已经使用的序列号和替换序列号的对应关系，打印两个集合中单独有的序列号
+# E_B = list(set(E).difference(set(B).union(set(B))))
+# print(E_B)
+
+# B_E = list(set(B).difference(set(E).union(set(E))))
+# print(B_E)
+
+
+
+col['原序列号'] = B
+# col['FandC'] = FinterC
+# col['FandD'] = FinterD
+# col['F_BCD'] = F_BCD
+
+
+# writeExcel(col[key],key) 
+writeExcel(col['原序列号'],'原序列号') 
+
+
+df.to_excel('E:/DataSets/'+"原始数据简要信息.xlsx", index=False)
