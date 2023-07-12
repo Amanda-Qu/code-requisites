@@ -1,0 +1,111 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jul 12 11:04:36 2023
+在数据集中修改错误的序列号
+JF62C362000286 改为 JF220362000286
+JF62C362000251 改为 JF220362000251
+JF62C362000250 改为 JF220362000250
+形式：文件夹里面有jpg和xml两种形式的图片
+@author: quzy
+"""
+
+
+
+import pandas as pd
+import time
+import random
+import xml.etree.ElementTree as ET
+import shutil
+
+
+
+
+
+B = ['JF62C362000286','JF62C362000251','JF62C362000250']  # 新序列号
+A = ['JF220362000286','JF220362000251','JF220362000250']  #旧序列号
+
+import os
+allpath = ('Z:\共享组\\AI组\创新申报\\AI数据集\数据库\\DS20 数据集\\change\\orinal\\')  # 序列号修改前的路径 
+newpath = ('Z:\共享组\\AI组\创新申报\\AI数据集\数据库\\DS20 数据集\\change\\new\\')  # 序列号修改后的路径
+ 
+
+    
+
+
+
+def replaceNo(file,NewNo):
+    xml_path = allpath + file
+    xml_path_new = newpath+NewNo
+    if not os.path.exists(xml_path_new):
+        # 创建修改后的序列号的多层目录
+        os.makedirs(xml_path_new)
+    
+    print(xml_path,'->',xml_path_new)
+
+    filelist = os.listdir(xml_path)
+    xmllist= [x for x in filelist if '.xml' in x]
+    jpglist = [x for x in filelist if '.jpeg' in x or '.jpg' in x]
+    
+            
+    for xmlfile in xmllist:
+        doc = ET.parse(os.path.join(xml_path,xmlfile))
+        print(os.path.join(xml_path,xmlfile))
+        root = doc.getroot()
+        sub1 = root.find('folder')  #
+        sub2 = root.find('filename')  #
+    
+        #xml中的图片名中的含序列号字符串子串替换成新的名字
+        oldjpg = sub2.text
+        if sub1.text in sub2.text:            
+            sub2.text = sub2.text.replace(sub1.text,NewNo) 
+        
+        #xml中的图片名中的含序列号字符串子串替换成新的名字
+        newjpg = sub2.text
+        shutil.copy(os.path.join(xml_path,oldjpg),os.path.join(xml_path_new,newjpg))
+
+        oldxml = sub1.text
+        sub1.text = NewNo     
+    
+        doc.write(os.path.join(xml_path_new,xmlfile.replace(oldxml,NewNo)),encoding='utf-8')   #保存修改
+    
+E = os.listdir(allpath)
+
+for file in E:
+    index = B.index(file)
+    NewNo = A[index]
+    replaceNo(file,NewNo)
+    
+    
+    
+# xml_path = allpath + file
+# xml_path_new = newallpath+file
+# if not os.path.exists(xml_path_new):
+#     # 创建修改后的序列号的多层目录
+#     os.makedirs(xml_path_new)
+# filelist = os.listdir(xml_path)
+# filelist= [x for x in filelist if '.xml' in x]
+
+        
+# for xmlfile in filelist:
+#     doc = ET.parse(os.path.join(xml_path,xmlfile))
+#     print(os.path.join(xml_path,xmlfile))
+#     root = doc.getroot()
+#     sub1 = root.find('folder')  #
+#     sub2 = root.find('filename')  #
+
+
+    
+#     if sub1.text in sub2.text:
+#         oldjpg = sub2.text
+#         sub2.text = sub2.text.replace(sub1.text,NewNo)  #xml中的图片名中的含序列号字符串子串替换成新的名字
+        
+#         newjpg = sub2.text
+#         shutil.copy(os.path.join(xml_path,oldjpg),os.path.join(xml_path_new,newjpg))
+#         # os.rename(os.path.join(xml_path,oldjpg),xml_path+newjpg)
+    
+#     oldxml = sub1.text
+#     sub1.text = NewNo     
+
+#     doc.write(os.path.join(xml_path_new,xmlfile.replace(oldxml,NewNo)),encoding='utf-8')   #保存修改
+   
+        
